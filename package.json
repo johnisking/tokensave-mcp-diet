@@ -1,0 +1,41 @@
+{
+  "name": "tokensave-mcp-diet",
+  "version": "0.1.0",
+  "description": "MCP proxy that keeps huge browser page snapshots (Playwright MCP, Chrome DevTools MCP) out of your AI context: outline first, details on request.",
+  "scripts": {},
+  "keywords": [
+    "mcp",
+    "playwright-mcp",
+    "chrome-devtools-mcp",
+    "tokens",
+    "claude",
+    "codex",
+    "context"
+  ],
+  "author": "TokenSave (https://tokensave.app)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1"
+  },
+  "type": "module",
+  "bin": {
+    "tokensave-mcp-diet": "index.js"
+  },
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.83"
+  },
+  "files": [
+    "index.js",
+    "slim.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnisking/tokensave-mcp-diet"
+  },
+  "homepage": "https://tokensave.app/data/browser-mcp-token-cost"
+}
