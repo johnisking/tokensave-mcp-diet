@@ -72,6 +72,14 @@ const RESULT_TOOL = {
   },
 };
 const results = new Map(); // id -> full text of shortened results
+const idOf = new Map(); // full text -> id, so the same result keeps one id
+function shortenText(text) {
+  let id = idOf.get(text);
+  if (!id) { id = `r${results.size + 1}`; results.set(id, text); idOf.set(text, id); }
+  const n = text.length.toLocaleString("en-US");
+  return `[tokensave-mcp-diet] This result was ${n} characters, so the middle is hidden (id ${id}). ` +
+    `Call result_detail with id "${id}" and a line range or a query to read any part.\n\n` + shorten(text);
+}
 const schemas = new Map(); // tool name -> input properties
 const HIDDEN = new Set(["disable_telemetry", "record_trajectory_feedback"]);
 
@@ -118,11 +126,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       if (c.type !== "text") return c;
       if (!isSnapshot(c.text)) {
         if (!(opts.maxText > 0) || c.text.length <= opts.maxText) return c;
-        const id = `r${results.size + 1}`;
-        results.set(id, c.text);
-        const n = c.text.length.toLocaleString("en-US");
-        return { type: "text", text: `[tokensave-mcp-diet] This result was ${n} characters, so the middle is hidden (id ${id}). ` +
-          `Call result_detail with id "${id}" and a line range or a query to read any part.\n\n` + shorten(c.text) };
+        return { type: "text", text: shortenText(c.text) };
       }
       if (c.text.length <= opts.maxChars) return c;
       lastSnapshot = c.text;
@@ -147,6 +151,13 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       }
       return { type: "text", text: note + o };
     });
+  }
+  // Some servers (FastMCP tools with a return type, e.g. Blender MCP) also send structuredContent,
+  // and clients such as Claude Code show that instead of the text. Shorten its long string fields too.
+  if (opts.maxText > 0 && res.structuredContent && typeof res.structuredContent === "object") {
+    for (const [k, v] of Object.entries(res.structuredContent)) {
+      if (typeof v === "string" && v.length > opts.maxText) res.structuredContent[k] = shortenText(v);
+    }
   }
   return res;
 });
