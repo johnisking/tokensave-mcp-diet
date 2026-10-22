@@ -79,7 +79,7 @@ The proxy picks a profile from the upstream tool names (browser profile for `bro
 
 ## 8. Results (2026-10-22, 68 runs: 34 baseline, 34 with 0.3)
 
-Added task: race showcase (low-poly racing car of its own design, a circuit with a corner, 5-second chase-camera animation, EEVEE 1280x720; rendered afterwards outside the measured run). 3 runs each.
+Added task: race showcase (low-poly racing car of its own design, a circuit with a corner, 5-second chase-camera animation, EEVEE 1280x720; rendered afterwards outside the measured run). 5 runs each (3 first, then 2 more each, interleaved).
 
 | Task | Input tokens, baseline → diet | Cost, baseline → diet |
 |---|---:|---:|
@@ -90,10 +90,11 @@ Added task: race showcase (low-poly racing car of its own design, a circuit with
 | Look from 4 sides | 112,118 → 112,180 | $0.212 → $0.195 |
 | Probe: print every vertex | 91,572 → 83,087 | $0.171 → $0.166 |
 | Probe: print every property | 242,782 → 67,965 (−72%) | $0.873 → $0.166 (−81%) |
-| Race showcase | 332,023 → 263,438 (−21%) | $0.499 → $0.448 (−10%) |
+| Race showcase (5 runs each) | 293,329 → 261,265 (−11%) | $0.471 → $0.445 (−6%, within noise) |
 
 - Every check passed in all 68 runs (scene facts read back from the saved .blend).
 - Everyday results are small (largest 2,347 characters); images cost 176 to 1,537 tokens per run, cut to 70 to 638 by the 512 px default.
 - The heavy case is a big script output: Claude Code refused a 122,373-character result, the model re-ran it in four ~32,000-character chunks, and all of them stayed in the context. 0.3 keeps the head and tail instead.
+- Race showcase: image tokens fell 62% (1,301 → 497 per run), but cost only 6% ($0.471 → $0.445; run-to-run SD $0.055 and $0.037, Welch t ≈ 0.9), so the showcase saving is not significant.
 - Tasks where 0.3 changed nothing still came out about 4% cheaper, so differences under about 8% are within noise.
 - Bug found and fixed during the runs: Blender MCP also returns structuredContent, which Claude Code shows instead of the text, so 0.3 now shortens long string fields there too. The 6 probe runs were re-run with fresh working directories after the fix (the first re-run reused cached prompts and was discarded).
