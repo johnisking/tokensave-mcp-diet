@@ -76,3 +76,24 @@ The proxy picks a profile from the upstream tool names (browser profile for `bro
 2. Write the scene generator and the run script (reuse run_baseline.ps1).
 3. Baseline runs, then decide which diet parts are worth building, based on the numbers.
 4. Build 0.3, re-run, publish dataset 21 with the same page, mirrors and DOI steps as dataset 20.
+
+## 8. Results (2026-10-22, 68 runs: 34 baseline, 34 with 0.3)
+
+Added task: race showcase (low-poly racing car of its own design, a circuit with a corner, 5-second chase-camera animation, EEVEE 1280x720; rendered afterwards outside the measured run). 3 runs each.
+
+| Task | Input tokens, baseline → diet | Cost, baseline → diet |
+|---|---:|---:|
+| Scene info, small | 69,606 → 67,418 | $0.162 → $0.155 |
+| Scene info, large | 115,868 → 97,571 | $0.190 → $0.177 |
+| Build table + 4 chairs | 125,563 → 109,540 | $0.230 → $0.211 |
+| Make chairs red + look | 124,649 → 120,846 | $0.200 → $0.188 |
+| Look from 4 sides | 112,118 → 112,180 | $0.212 → $0.195 |
+| Probe: print every vertex | 91,572 → 83,087 | $0.171 → $0.166 |
+| Probe: print every property | 242,782 → 67,965 (−72%) | $0.873 → $0.166 (−81%) |
+| Race showcase | 332,023 → 263,438 (−21%) | $0.499 → $0.448 (−10%) |
+
+- Every check passed in all 68 runs (scene facts read back from the saved .blend).
+- Everyday results are small (largest 2,347 characters); images cost 176 to 1,537 tokens per run, cut to 70 to 638 by the 512 px default.
+- The heavy case is a big script output: Claude Code refused a 122,373-character result, the model re-ran it in four ~32,000-character chunks, and all of them stayed in the context. 0.3 keeps the head and tail instead.
+- Tasks where 0.3 changed nothing still came out about 4% cheaper, so differences under about 8% are within noise.
+- Bug found and fixed during the runs: Blender MCP also returns structuredContent, which Claude Code shows instead of the text, so 0.3 now shortens long string fields there too. The 6 probe runs were re-run with fresh working directories after the fix (the first re-run reused cached prompts and was discarded).
