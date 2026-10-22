@@ -16,7 +16,7 @@ We measured both servers with Claude Code (Opus 5.5) on 2026-10-22, 94 runs in t
 | Whole task "list the top 5 stories", API cost (average of 5 runs) | $0.298 → $0.208 (−30%) | $0.271 → $0.226 (−17%) |
 | Whole task "find two facts in the long Wikipedia article", API cost (5 runs) | $0.181 → $0.173 (−4%) | $0.230 → $0.178 (−23%) |
 
-Full method, raw logs and limitations: https://tokensave.app/data/browser-mcp-token-cost
+Full method, raw logs and limitations: https://tokensave.app/data/browser-mcp-token-cost (dataset DOI [10.5281/zenodo.23555401](https://doi.org/10.5281/zenodo.23555401), CC BY 4.0)
 
 Claude Code already refuses tool results that are too large and saves them to a file. Version 0.1 sent a 9,000-token outline in that case and lost money inside Claude Code (+3% to +44% per task). Version 0.2 sends a table of contents of about 1,100 tokens instead, which costs about the same as Claude Code's refusal note and lets the model open just the section it needs. In clients that pass large results straight into the context, one long page can cost more than 200,000 tokens.
 
