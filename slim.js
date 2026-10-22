@@ -66,6 +66,16 @@ export function detail(text, { ref, query } = {}, maxChars = 4000) {
     const i = lines.findIndex((l) => l.includes(`[ref=${r}]`) || new RegExp(`\\buid=${r.replace(/[^\w]/g, "")}\\b`).test(l));
     if (i < 0) return `No element with ref ${r} in the last snapshot.`;
     picked = subtree(lines, i);
+    if (/\bheading\b/.test(lines[i])) {
+      // a heading: return its section, up to the next heading of the same or a higher level
+      const lv = Number((lines[i].match(/\[level=(\d)\]|level="(\d)"/) || []).slice(1).find(Boolean) || 6);
+      picked = [lines[i]];
+      for (let j = i + 1; j < lines.length; j++) {
+        const m = /\bheading\b/.test(lines[j]) && (lines[j].match(/\[level=(\d)\]|level="(\d)"/) || []).slice(1).find(Boolean);
+        if (m && Number(m) <= lv) break;
+        picked.push(lines[j]);
+      }
+    }
   } else if (query) {
     const norm = (x) => x.replace(/\u00a0/g, " ").toLowerCase();
     const q = norm(String(query));
@@ -107,5 +117,28 @@ export function compact(text) {
     l = l.replace(/^(\s+)/, (m) => " ".repeat(Math.floor(m.length / 2)));
     out.push(l);
   }
+  return out.join("\n");
+}
+
+// Table of contents for very large pages: title, headings with refs, and a count of controls. Usually well under 1,000 tokens.
+export function toc(text, { maxHeadings = 60, maxControls = 10 } = {}) {
+  const lines = text.split("\n");
+  const out = [];
+  for (const l of lines.slice(0, 8)) if (/Page URL|Page Title/.test(l)) out.push(l.trim());
+  const heads = [], controls = [];
+  let links = 0;
+  for (const l of lines) {
+    if (!REF.test(l)) continue;
+    if (/\bheading\b/.test(l)) {
+      const lv = (l.match(/\[level=(\d)\]|level="(\d)"/) || []).slice(1).find(Boolean);
+      if (!lv || Number(lv) <= 3) heads.push(clean(l, 70).trim().replace(/^- /, ""));
+    } else if (/\b(textbox|searchbox|combobox|button)\b/.test(l)) controls.push(clean(l, 40).trim().replace(/^- /, ""));
+    else if (/\blink\b/.test(l)) links++;
+  }
+  out.push(`Headings (${heads.length}${heads.length > maxHeadings ? `, first ${maxHeadings}` : ""}):`);
+  out.push(...heads.slice(0, maxHeadings).map((h) => "  " + h));
+  out.push(`Form fields and buttons (${controls.length}${controls.length > maxControls ? `, first ${maxControls}` : ""}):`);
+  out.push(...controls.slice(0, maxControls).map((c) => "  " + c));
+  out.push(`Links: ${links} (not listed)`);
   return out.join("\n");
 }

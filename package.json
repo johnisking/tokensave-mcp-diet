@@ -1,6 +1,6 @@
 {
   "name": "tokensave-mcp-diet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP proxy that keeps huge browser page snapshots (Playwright MCP, Chrome DevTools MCP) out of your AI context: outline first, details on request.",
   "scripts": {},
   "keywords": [
