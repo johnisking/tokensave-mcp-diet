@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software or its measurements, please cite it as below."
+title: "tokensave-mcp-diet: an MCP proxy that keeps large browser page snapshots out of the model context"
+type: software
+authors:
+  - name: "TokenSave"
+    website: "https://tokensave.app"
+version: "0.2.0"
+date-released: "2026-10-22"
+license: MIT
+repository-code: "https://github.com/johnisking/tokensave-mcp-diet"
+url: "https://tokensave.app/data/browser-mcp-token-cost"
+keywords:
+  - mcp
+  - model context protocol
+  - playwright-mcp
+  - chrome-devtools-mcp
+  - tokens
+  - claude-code
+references:
+  - type: dataset
+    title: "Browser MCP token cost: Playwright MCP vs Chrome DevTools MCP, and what a snapshot diet saves"
+    authors:
+      - name: "TokenSave"
+    url: "https://tokensave.app/data/browser-mcp-token-cost"
+    year: 2026
