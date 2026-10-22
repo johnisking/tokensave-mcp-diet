@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// tokensave-mcp-diet: an MCP proxy that keeps browser page snapshots out of your context.
+// tokensave-mcp-diet: an MCP proxy that keeps oversized tool results out of your context.
 // It wraps an MCP server and passes every tool through, but keeps oversized results out of the context:
 // - browser page snapshots (Playwright MCP, Chrome DevTools MCP) become a compact tree, an outline or a table of contents;
 // - any other long text result (script output, logs, dumps) keeps its head and tail plus a summary of the hidden lines;
