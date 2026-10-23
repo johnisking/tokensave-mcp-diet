@@ -52,6 +52,7 @@ const DETAIL_TOOL = {
       query: { type: "string", description: "Text to find on the page (case-insensitive)" },
       max_chars: { type: "number", description: "Maximum characters to return (default 4000)" },
     },
+    additionalProperties: false,
   },
 };
 
@@ -69,6 +70,7 @@ const RESULT_TOOL = {
       max_chars: { type: "number", description: "Maximum characters to return (default 4000)" },
     },
     required: ["id"],
+    additionalProperties: false,
   },
 };
 const results = new Map(); // id -> full text of shortened results
