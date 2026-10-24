@@ -20,6 +20,12 @@ Full method, raw logs and limitations: https://tokensave.app/data/browser-mcp-to
 
 Claude Code already refuses tool results that are too large and saves them to a file. Version 0.1 sent a 9,000-token outline in that case and lost money inside Claude Code (+3% to +44% per task). Version 0.2 sends a table of contents of about 1,100 tokens instead, which costs about the same as Claude Code's refusal note and lets the model open just the section it needs. In clients that pass large results straight into the context, one long page can cost more than 200,000 tokens.
 
+### Compared with Chrome DevTools MCP's `filePath` option
+
+Chrome DevTools MCP can also keep big results out of the context on its own: `take_snapshot` and `evaluate_script` take an optional `filePath` and write the result to a file instead of returning it ([#463](https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/463), [#2054](https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/2054)). Use it when your agent can read local files and you want the whole result in one place.
+
+The proxy works differently: the model gets a short outline or table of contents with live `uid`s, so it can keep clicking and typing on the page, and reads one section with `snapshot_detail` instead of opening a file. It also works with servers that have no such option (Playwright MCP, MCP for Blender) and with clients that cannot read files. We have not measured the `filePath` option; our numbers above are for Chrome DevTools MCP 1.11.0 without it.
+
 ### Blender (version 0.3)
 
 MCP for Blender in Claude Code, 2026-10-22, 72 runs: everyday tasks cost $0.16 to $0.23 and a racing scene with a chase camera $0.47, with small results, so the proxy changes little there (−4% to −8%, within noise). The one expensive case is a long script output: printing every property of 580 objects cost $0.873, and $0.166 through the proxy (−81%). Data: https://tokensave.app/data/blender-mcp-token-cost
@@ -54,6 +60,8 @@ Needs Node.js 18 or later. No npm account or API key.
 ```
 
 For Chrome DevTools MCP, replace the part after `--` with `npx -y chrome-devtools-mcp@latest`. For MCP for Blender, use `uvx mcp-for-blender`. On Windows, use `"command": "cmd"` and put `"/c"` in front of the arguments.
+
+**Docker**: the included `Dockerfile` runs the proxy in front of headless Playwright MCP (`docker build -t tokensave-mcp-diet .`, then `docker run -i --rm tokensave-mcp-diet`). Listing the tools needs no browser; to use the browser tools in the container, add `npx playwright install --with-deps chromium` to the image.
 
 The same setup should work in other MCP clients that start servers with a command (Claude Desktop, Cursor, Codex); we have only measured it in Claude Code.
 
